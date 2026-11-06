@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Render Main Dashboard Cards & Global Stats
+// Render Main Dashboard Cards & Global Stats with Highlights
 function renderDashboard() {
     const searchInput = document.getElementById('searchInput');
     const mobileSearchInput = document.getElementById('mobileSearchInput');
@@ -165,6 +165,34 @@ function renderDashboard() {
         totalEvents += eventsCount;
         totalUrgent += urgentCount;
 
+        // Determine Important Highlight for Card
+        const urgentDate = biz.impDates && biz.impDates.find(d => d.urgent);
+        const highTodo = biz.todos && biz.todos.find(t => !t.completed && t.priority === 'High');
+
+        let highlightHtml = '';
+        if (urgentDate) {
+            highlightHtml = `
+                <div class="bg-rose-500/10 border border-rose-500/20 px-3 py-2 rounded-xl flex items-center space-x-2 text-rose-400 text-xs">
+                    <i class="fa-solid fa-triangle-exclamation shrink-0"></i>
+                    <span class="line-clamp-1"><strong>Urgent:</strong> ${urgentDate.title} (${urgentDate.date})</span>
+                </div>
+            `;
+        } else if (highTodo) {
+            highlightHtml = `
+                <div class="bg-amber-500/10 border border-amber-500/20 px-3 py-2 rounded-xl flex items-center space-x-2 text-amber-400 text-xs">
+                    <i class="fa-solid fa-circle-exclamation shrink-0"></i>
+                    <span class="line-clamp-1"><strong>Top Task:</strong> ${highTodo.text}</span>
+                </div>
+            `;
+        } else if (biz.notes) {
+            highlightHtml = `
+                <div class="bg-blue-500/10 border border-blue-500/20 px-3 py-2 rounded-xl flex items-center space-x-2 text-blue-400 text-xs">
+                    <i class="fa-solid fa-note-sticky shrink-0"></i>
+                    <span class="line-clamp-1"><strong>Note:</strong> ${biz.notes}</span>
+                </div>
+            `;
+        }
+
         // Card Element
         const card = document.createElement('div');
         card.className = "bg-slate-900/80 border border-slate-800 hover:border-slate-700 rounded-2xl p-5 flex flex-col justify-between space-y-4 transition-all hover:shadow-xl hover:shadow-blue-500/5 cursor-pointer group relative overflow-hidden";
@@ -186,6 +214,9 @@ function renderDashboard() {
                     ${biz.category}
                 </span>
             </div>
+
+            <!-- IMPORTANT HIGHLIGHT SECTION -->
+            ${highlightHtml}
 
             <div class="grid grid-cols-3 gap-2 py-2 border-y border-slate-800/60 text-center">
                 <div class="bg-slate-950/40 p-2 rounded-lg">
@@ -596,4 +627,5 @@ function handleSaveNotes() {
     if (!biz) return;
     biz.notes = document.getElementById('wsNotesText').value;
     alert('Notes and strategy updated successfully!');
+    renderDashboard();
 }
