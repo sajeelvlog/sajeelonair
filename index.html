@@ -1,318 +1,418 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Command Center - Multi-Business Dashboard</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OmniControl Hub - Multi-Business Dashboard</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Diffs for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col font-sans">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans antialiased selection:bg-blue-500 selection:text-white">
 
-  <!-- Header / Navigation -->
-  <header class="bg-gray-800 border-b border-gray-700 sticky top-0 z-30 shadow-lg">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-      <div class="flex items-center space-x-3 cursor-pointer" onclick="showDashboard()">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-xl shadow-lg">
-          ⚡
-        </div>
-        <div>
-          <h1 class="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400">COMMAND CENTER</h1>
-          <p class="text-xs text-gray-400 hidden sm:block">Multi-Business Control Hub</p>
-        </div>
-      </div>
-
-      <div class="flex items-center space-x-3">
-        <!-- Global Search -->
-        <div class="relative">
-          <i class="fas fa-search absolute left-3 top-2.5 text-gray-400 text-sm"></i>
-          <input type="text" id="global-search" oninput="handleSearch()" placeholder="Search tasks, dates, notes..." class="bg-gray-900 text-sm pl-9 pr-4 py-1.5 rounded-lg border border-gray-700 focus:outline-none focus:border-indigo-500 w-40 sm:w-64 transition-all">
-        </div>
-
-        <button onclick="openModal('add-business-modal')" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg text-sm font-medium flex items-center space-x-2 transition shadow">
-          <i class="fas fa-plus text-xs"></i>
-          <span class="hidden sm:inline">Add Business</span>
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <!-- Global Search Results Container -->
-  <div id="search-results-overlay" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 w-full">
-    <div class="bg-gray-800 border border-gray-700 rounded-xl p-4 shadow-xl">
-      <div class="flex justify-between items-center mb-3 border-b border-gray-700 pb-2">
-        <h3 class="text-sm font-bold text-gray-300">Search Results</h3>
-        <button onclick="clearSearch()" class="text-xs text-gray-400 hover:text-white"><i class="fas fa-times"></i> Close</button>
-      </div>
-      <div id="search-results-list" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
-    </div>
-  </div>
-
-  <!-- MAIN CONTAINER -->
-  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-
-    <!-- VIEW 1: MAIN DASHBOARD -->
-    <div id="dashboard-view" class="space-y-6">
-      <!-- Welcome Banner -->
-      <div class="bg-gradient-to-r from-indigo-900/40 via-purple-900/30 to-gray-800 border border-indigo-500/30 rounded-2xl p-6 shadow-xl">
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h2 class="text-2xl font-bold text-white">Overview & Quick Actions</h2>
-            <p class="text-gray-400 text-sm mt-1">Select any business card below to open its dedicated workspace, track upcoming schedules, and manage to-do items.</p>
-          </div>
-          <div class="flex items-center space-x-4 bg-gray-900/60 p-3 rounded-xl border border-gray-700/50 self-start md:self-auto">
-            <div class="text-center px-3 border-r border-gray-700">
-              <span id="stat-active-biz" class="text-xl font-bold text-indigo-400">0</span>
-              <p class="text-xs text-gray-400">Businesses</p>
+    <!-- TOP EXECUTIVE HEADER -->
+    <header class="sticky top-0 z-30 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center space-x-3">
+            <div class="bg-gradient-to-tr from-blue-600 to-indigo-500 p-2.5 rounded-xl shadow-lg shadow-blue-500/20 text-white">
+                <i class="fa-solid fa-layer-group text-xl"></i>
             </div>
-            <div class="text-center px-3 border-r border-gray-700">
-              <span id="stat-pending-todos" class="text-xl font-bold text-amber-400">0</span>
-              <p class="text-xs text-gray-400">Pending Tasks</p>
-            </div>
-            <div class="text-center px-3">
-              <span id="stat-upcoming-events" class="text-xl font-bold text-emerald-400">0</span>
-              <p class="text-xs text-gray-400">Events Scheduled</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Business Cards Grid -->
-      <div class="flex items-center justify-between">
-        <h3 class="text-lg font-bold text-gray-200">Active Workspaces</h3>
-        <span class="text-xs text-gray-400">Click card to manage details</span>
-      </div>
-
-      <div id="business-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Cards dynamically injected here -->
-      </div>
-    </div>
-
-    <!-- VIEW 2: BUSINESS WORKSPACE DETAIL -->
-    <div id="workspace-view" class="hidden space-y-6">
-      <!-- Header -->
-      <div id="workspace-header-card" class="bg-gray-800 border rounded-2xl p-6 shadow-xl relative overflow-hidden">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
-          <div class="flex items-center space-x-4">
-            <button onclick="showDashboard()" class="w-10 h-10 rounded-xl bg-gray-900 hover:bg-gray-700 border border-gray-700 flex items-center justify-center text-gray-300 transition">
-              <i class="fas fa-arrow-left"></i>
-            </button>
             <div>
-              <div class="flex items-center space-x-2">
-                <span id="ws-category" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-indigo-900/60 text-indigo-300 border border-indigo-500/30">Category</span>
-                <span class="text-xs text-gray-400">• Active Workspace</span>
-              </div>
-              <h2 id="ws-title" class="text-2xl font-bold text-white mt-1">Business Name</h2>
+                <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                    OmniControl Hub
+                    <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                        Multi-Biz OS
+                    </span>
+                </h1>
+                <p class="text-xs text-slate-400">Manage Optim, Edudot, Aurkid, Wowbite & Freelance</p>
             </div>
-          </div>
+        </div>
 
-          <div class="flex items-center space-x-2">
-            <button onclick="openAddTodoModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3.5 py-2 rounded-lg text-sm font-medium flex items-center space-x-2 transition shadow">
-              <i class="fas fa-plus"></i>
-              <span>New Task</span>
+        <!-- Global Search Bar -->
+        <div class="flex-1 max-w-md mx-4 hidden md:block">
+            <div class="relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Search across all businesses or categories..."
+                    class="w-full bg-slate-950/80 border border-slate-700/80 rounded-xl pl-10 pr-8 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+                    oninput="renderDashboard()"
+                />
+                <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-xmark text-xs"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Header Actions -->
+        <div class="flex items-center space-x-3">
+            <button
+                onclick="openAddBusinessModal()"
+                className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-xl transition shadow-lg shadow-blue-600/25 cursor-pointer"
+                class="flex items-center space-x-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold px-4 py-2 rounded-xl transition shadow-lg shadow-blue-600/25"
+            >
+                <i class="fa-solid fa-plus text-xs"></i>
+                <span>Add Business</span>
             </button>
-            <button onclick="openAddEventModal()" class="bg-purple-600 hover:bg-purple-500 text-white px-3.5 py-2 rounded-lg text-sm font-medium flex items-center space-x-2 transition shadow">
-              <i class="fas fa-calendar-plus"></i>
-              <span>Add Event</span>
-            </button>
-            <button onclick="deleteCurrentBusiness()" class="bg-gray-900 hover:bg-red-900/50 text-gray-400 hover:text-red-400 border border-gray-700 px-3 py-2 rounded-lg text-sm transition" title="Delete Workspace">
-              <i class="fas fa-trash"></i>
-            </button>
-          </div>
         </div>
-      </div>
+    </header>
 
-      <!-- Tab Navigation -->
-      <div class="border-b border-gray-800 flex space-x-6 overflow-x-auto">
-        <button id="tab-btn-todos" onclick="switchTab('todos')" class="py-3 px-1 border-b-2 font-medium text-sm transition text-indigo-400 border-indigo-500 flex items-center space-x-2">
-          <i class="fas fa-tasks"></i> <span>To-Do List</span>
-          <span id="tab-badge-todos" class="bg-gray-800 text-gray-300 text-xs px-2 py-0.5 rounded-full border border-gray-700">0</span>
-        </button>
-        <button id="tab-btn-schedules" onclick="switchTab('schedules')" class="py-3 px-1 border-b-2 font-medium text-sm transition text-gray-400 border-transparent hover:text-gray-200 flex items-center space-x-2">
-          <i class="fas fa-calendar-alt"></i> <span>Schedules & Events</span>
-          <span id="tab-badge-schedules" class="bg-gray-800 text-gray-300 text-xs px-2 py-0.5 rounded-full border border-gray-700">0</span>
-        </button>
-        <button id="tab-btn-dates" onclick="switchTab('dates')" class="py-3 px-1 border-b-2 font-medium text-sm transition text-gray-400 border-transparent hover:text-gray-200 flex items-center space-x-2">
-          <i class="fas fa-exclamation-triangle"></i> <span>Key Dates</span>
-          <span id="tab-badge-dates" class="bg-gray-800 text-gray-300 text-xs px-2 py-0.5 rounded-full border border-gray-700">0</span>
-        </button>
-        <button id="tab-btn-notes" onclick="switchTab('notes')" class="py-3 px-1 border-b-2 font-medium text-sm transition text-gray-400 border-transparent hover:text-gray-200 flex items-center space-x-2">
-          <i class="fas fa-sticky-note"></i> <span>Notes & Ops</span>
-        </button>
-      </div>
-
-      <!-- TAB CONTENT PANELS -->
-
-      <!-- 1. TO-DO TAB -->
-      <div id="tab-content-todos" class="space-y-4">
-        <div class="flex items-center justify-between">
-          <div class="flex space-x-2">
-            <button onclick="filterTodos('all')" class="text-xs bg-gray-800 hover:bg-gray-700 px-3 py-1.5 rounded-lg border border-gray-700 text-gray-300">All</button>
-            <button onclick="filterTodos('pending')" class="text-xs bg-gray-800 hover:bg-gray-700 px-3 py-1.5 rounded-lg border border-gray-700 text-amber-400">Pending</button>
-            <button onclick="filterTodos('completed')" class="text-xs bg-gray-800 hover:bg-gray-700 px-3 py-1.5 rounded-lg border border-gray-700 text-emerald-400">Completed</button>
-          </div>
+    <!-- MOBILE SEARCH BAR -->
+    <div class="md:hidden px-4 py-3 bg-slate-900 border-b border-slate-800">
+        <div class="relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+            <input
+                type="text"
+                id="mobileSearchInput"
+                placeholder="Search businesses..."
+                class="w-full bg-slate-950 border border-slate-700 rounded-xl pl-10 pr-4 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none"
+                oninput="syncMobileSearch(this.value)"
+            />
         </div>
-
-        <div id="todos-list" class="space-y-3">
-          <!-- Dynamic items -->
-        </div>
-      </div>
-
-      <!-- 2. SCHEDULES & EVENTS TAB -->
-      <div id="tab-content-schedules" class="hidden space-y-4">
-        <div id="schedules-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- Dynamic schedule cards -->
-        </div>
-      </div>
-
-      <!-- 3. KEY DATES TAB -->
-      <div id="tab-content-dates" class="hidden space-y-4">
-        <div id="dates-list" class="space-y-3">
-          <!-- Dynamic dates items -->
-        </div>
-      </div>
-
-      <!-- 4. NOTES TAB -->
-      <div id="tab-content-notes" class="hidden space-y-4">
-        <div class="bg-gray-800 border border-gray-700 rounded-xl p-5 shadow">
-          <div class="flex justify-between items-center mb-3">
-            <h4 class="font-bold text-gray-200">Workspace Notepad</h4>
-            <span id="notes-save-status" class="text-xs text-gray-500">Auto-saved</span>
-          </div>
-          <textarea id="workspace-notes-area" oninput="saveNotes()" rows="10" placeholder="Jot down operational procedures, client details, ideas, or meeting logs..." class="w-full bg-gray-900 border border-gray-700 rounded-lg p-4 text-gray-200 focus:outline-none focus:border-indigo-500 font-mono text-sm leading-relaxed"></textarea>
-        </div>
-      </div>
     </div>
 
-  </main>
+    <!-- MAIN BODY CONTAINER -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 lg:px-8 py-6 space-y-8">
 
-  <!-- MODALS -->
+        <!-- GLOBAL STATS BAR -->
+        <section className="grid grid-cols-2 md:grid-cols-4 gap-4" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-slate-900/70 border border-slate-800 p-4 rounded-2xl flex items-center space-x-4">
+                <div class="p-3 bg-amber-500/10 text-amber-400 rounded-xl border border-amber-500/20">
+                    <i class="fa-regular fa-square-check text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Pending To-Dos</p>
+                    <div class="flex items-baseline space-x-2">
+                        <span id="statPending" class="text-2xl font-bold text-white">0</span>
+                        <span class="text-xs text-slate-400">tasks</span>
+                    </div>
+                </div>
+            </div>
 
-  <!-- Add Business Modal -->
-  <div id="add-business-modal" class="hidden fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-gray-800 border border-gray-700 rounded-2xl w-full max-w-md p-6 space-y-5 shadow-2xl">
-      <div class="flex justify-between items-center">
-        <h3 class="text-lg font-bold text-white">Add New Business / Project</h3>
-        <button onclick="closeModal('add-business-modal')" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
-      </div>
-      <form onsubmit="handleAddBusiness(event)" class="space-y-4">
-        <div>
-          <label class="block text-xs font-semibold text-gray-400 mb-1">Business Name</label>
-          <input type="text" id="new-biz-name" required placeholder="e.g. NextGen Academy" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500 text-sm">
+            <div class="bg-slate-900/70 border border-slate-800 p-4 rounded-2xl flex items-center space-x-4">
+                <div class="p-3 bg-indigo-500/10 text-indigo-400 rounded-xl border border-indigo-500/20">
+                    <i class="fa-regular fa-calendar-days text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Scheduled Events</p>
+                    <div class="flex items-baseline space-x-2">
+                        <span id="statEvents" class="text-2xl font-bold text-white">0</span>
+                        <span class="text-xs text-slate-400">upcoming</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-900/70 border border-slate-800 p-4 rounded-2xl flex items-center space-x-4">
+                <div class="p-3 bg-rose-500/10 text-rose-400 rounded-xl border border-rose-500/20">
+                    <i class="fa-solid fa-triangle-exclamation text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Urgent Milestones</p>
+                    <div class="flex items-baseline space-x-2">
+                        <span id="statUrgent" class="text-2xl font-bold text-white">0</span>
+                        <span class="text-xs text-slate-400">high priority</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-900/70 border border-slate-800 p-4 rounded-2xl flex items-center space-x-4">
+                <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20">
+                    <i class="fa-solid fa-chart-line text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Overall Progress</p>
+                    <div class="flex items-baseline space-x-2">
+                        <span id="statProgress" class="text-2xl font-bold text-white">0%</span>
+                        <span class="text-xs text-emerald-400">completion</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION HEADER -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
+            <div>
+                <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                    Active Ventures & Projects
+                    <span id="bizCountTag" class="text-xs bg-slate-800 text-slate-300 px-2.5 py-0.5 rounded-full">0</span>
+                </h2>
+                <p class="text-xs text-slate-400">Click any card to open detailed workspace, tasks, and schedules</p>
+            </div>
         </div>
-        <div>
-          <label class="block text-xs font-semibold text-gray-400 mb-1">Category</label>
-          <input type="text" id="new-biz-category" required placeholder="e.g. Coaching, Retail, Tech" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500 text-sm">
+
+        <!-- BUSINESS CARDS GRID CONTAINER -->
+        <div id="cardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Dynamic Business Cards Render Here -->
         </div>
-        <div>
-          <label class="block text-xs font-semibold text-gray-400 mb-1">Description / Tagline</label>
-          <input type="text" id="new-biz-desc" placeholder="Brief tagline or scope" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500 text-sm">
+    </main>
+
+    <!-- MODAL 1: ADD NEW BUSINESS MODAL -->
+    <div id="addBusinessModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg p-6 space-y-6 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-plus text-blue-400"></i>
+                    Add New Business Venture
+                </h3>
+                <button onclick="closeAddBusinessModal()" class="text-slate-400 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form onsubmit="handleCreateBusiness(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Business Name *</label>
+                    <input
+                        type="text"
+                        id="newBizName"
+                        required
+                        placeholder="e.g. NextGen Robotics"
+                        class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                    />
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Sub-heading / Tagline</label>
+                    <input
+                        type="text"
+                        id="newBizTagline"
+                        placeholder="e.g. STEM Kits & Robotics Classes"
+                        class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none"
+                    />
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Category</label>
+                        <input
+                            type="text"
+                            id="newBizCategory"
+                            value="General / Startup"
+                            class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none"
+                        />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Brand Accent Color</label>
+                        <div class="flex items-center space-x-2">
+                            <input
+                                type="color"
+                                id="newBizColor"
+                                value="#3B82F6"
+                                class="w-9 h-9 bg-transparent border-0 cursor-pointer rounded"
+                            />
+                            <span id="colorHexLabel" class="text-xs text-slate-400 font-mono">#3B82F6</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Icon Style</label>
+                    <select id="newBizIcon" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none">
+                        <option value="fa-graduation-cap">Graduation Cap (Education)</option>
+                        <option value="fa-book-open">Book / Learning</option>
+                        <option value="fa-bag-shopping">Shopping / Commerce</option>
+                        <option value="fa-utensils">Utensils / Food</option>
+                        <option value="fa-wand-magic-sparkles">Sparkles / Coaching</option>
+                        <option value="fa-briefcase">Generic Briefcase</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Initial Strategy Notes</label>
+                    <textarea
+                        id="newBizNotes"
+                        rows="3"
+                        placeholder="Key objectives, goals or links..."
+                        class="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-sm text-white focus:outline-none"
+                    ></textarea>
+                </div>
+
+                <div class="flex justify-end space-x-3 pt-4 border-t border-slate-800">
+                    <button
+                        type="button"
+                        onclick="closeAddBusinessModal()"
+                        class="px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        type="submit"
+                        class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-5 py-2 rounded-xl transition shadow-lg shadow-blue-600/20"
+                    >
+                        Create Business Card
+                    </button>
+                </div>
+            </form>
         </div>
-        <div>
-          <label class="block text-xs font-semibold text-gray-400 mb-1">Accent Theme Color</label>
-          <select id="new-biz-color" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500 text-sm">
-            <option value="indigo">Indigo Accent</option>
-            <option value="emerald">Emerald Accent</option>
-            <option value="amber">Amber Accent</option>
-            <option value="rose">Rose Accent</option>
-            <option value="sky">Sky Blue Accent</option>
-            <option value="purple">Purple Accent</option>
-          </select>
-        </div>
-        <div class="flex justify-end space-x-3 pt-2">
-          <button type="button" onclick="closeModal('add-business-modal')" class="px-4 py-2 rounded-lg text-sm bg-gray-700 hover:bg-gray-600 text-gray-300">Cancel</button>
-          <button type="submit" class="px-4 py-2 rounded-lg text-sm bg-indigo-600 hover:bg-indigo-500 text-white font-medium shadow">Create Business</button>
-        </div>
-      </form>
     </div>
-  </div>
 
-  <!-- Add To-Do Modal -->
-  <div id="add-todo-modal" class="hidden fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-gray-800 border border-gray-700 rounded-2xl w-full max-w-md p-6 space-y-5 shadow-2xl">
-      <div class="flex justify-between items-center">
-        <h3 class="text-lg font-bold text-white">Add New Task</h3>
-        <button onclick="closeModal('add-todo-modal')" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
-      </div>
-      <form onsubmit="handleAddTask(event)" class="space-y-4">
-        <div>
-          <label class="block text-xs font-semibold text-gray-400 mb-1">Task Title</label>
-          <input type="text" id="todo-title" required placeholder="e.g. Prepare CMA batch schedule" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500 text-sm">
+    <!-- MODAL 2: WORKSPACE DETAILED BUSINESS MODAL -->
+    <div id="workspaceModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 md:p-6 overflow-y-auto">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+            
+            <!-- Modal Top Header -->
+            <div id="workspaceHeader" class="p-6 border-b border-slate-800 flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center space-x-3">
+                    <div id="wsIconBox" class="p-3 rounded-xl text-white shadow-lg flex items-center justify-center">
+                        <i id="wsIcon" class="fa-solid fa-briefcase text-2xl"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h2 id="wsTitle" class="text-2xl font-bold text-white">Business Title</h2>
+                            <span id="wsCategory" class="text-xs px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+                                Category
+                            </span>
+                        </div>
+                        <p id="wsTagline" class="text-xs text-slate-400 mt-0.5">Tagline text</p>
+                    </div>
+                </div>
+                <button onclick="closeWorkspaceModal()" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Modal Navigation Tabs -->
+            <div class="flex items-center border-b border-slate-800 px-6 overflow-x-auto bg-slate-950/40">
+                <button onclick="switchTab('todos')" id="tabBtn-todos" class="tab-btn py-3.5 px-4 text-sm font-semibold border-b-2 border-blue-500 text-blue-400 flex items-center space-x-2 whitespace-nowrap">
+                    <span>To-Do List</span>
+                    <span id="tabCount-todos" class="text-xs px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300">0</span>
+                </button>
+                <button onclick="switchTab('schedules')" id="tabBtn-schedules" class="tab-btn py-3.5 px-4 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center space-x-2 whitespace-nowrap">
+                    <span>Schedules & Events</span>
+                    <span id="tabCount-schedules" class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">0</span>
+                </button>
+                <button onclick="switchTab('dates')" id="tabBtn-dates" class="tab-btn py-3.5 px-4 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center space-x-2 whitespace-nowrap">
+                    <span>Key Dates</span>
+                    <span id="tabCount-dates" class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">0</span>
+                </button>
+                <button onclick="switchTab('checklist')" id="tabBtn-checklist" class="tab-btn py-3.5 px-4 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center space-x-2 whitespace-nowrap">
+                    <span>Operations Checklist</span>
+                    <span id="tabCount-checklist" class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">0</span>
+                </button>
+                <button onclick="switchTab('notes')" id="tabBtn-notes" class="tab-btn py-3.5 px-4 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center space-x-2 whitespace-nowrap">
+                    <span>Notes & Strategy</span>
+                </button>
+            </div>
+
+            <!-- Workspace Tab Panels -->
+            <div class="p-6 flex-1 overflow-y-auto space-y-6">
+
+                <!-- TAB 1: TODOS -->
+                <div id="tabPanel-todos" class="tab-panel space-y-6">
+                    <form onsubmit="handleAddTodo(event)" class="bg-slate-950/60 p-4 rounded-xl border border-slate-800 grid grid-cols-1 sm:grid-cols-4 gap-3">
+                        <input
+                            type="text"
+                            id="wsTodoText"
+                            required
+                            placeholder="Task description..."
+                            class="sm:col-span-2 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                        />
+                        <select
+                            id="wsTodoPriority"
+                            class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                        >
+                            <option value="High">High Priority</option>
+                            <option value="Medium" selected>Medium Priority</option>
+                            <option value="Low">Low Priority</option>
+                        </select>
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm rounded-lg px-4 py-2 flex items-center justify-center space-x-1 cursor-pointer">
+                            <i class="fa-solid fa-plus text-xs"></i>
+                            <span>Add Task</span>
+                        </button>
+                    </form>
+                    <div id="wsTodoList" class="space-y-2"></div>
+                </div>
+
+                <!-- TAB 2: SCHEDULES -->
+                <div id="tabPanel-schedules" class="tab-panel hidden space-y-6">
+                    <form onsubmit="handleAddSchedule(event)" class="bg-slate-950/60 p-4 rounded-xl border border-slate-800 space-y-3">
+                        <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Add Upcoming Event / Class Schedule</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                            <input type="text" id="wsSchedTitle" required placeholder="Event Title..." class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none" />
+                            <input type="date" id="wsSchedDate" required class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none" />
+                            <input type="text" id="wsSchedTime" placeholder="Time (e.g. 10:00 AM)" class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none" />
+                            <input type="text" id="wsSchedLoc" placeholder="Location / Link" class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none" />
+                        </div>
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm rounded-lg px-4 py-2 flex items-center space-x-1 cursor-pointer">
+                            <i class="fa-solid fa-plus text-xs"></i>
+                            <span>Schedule Event</span>
+                        </button>
+                    </form>
+                    <div id="wsSchedulesList" class="space-y-3"></div>
+                </div>
+
+                <!-- TAB 3: KEY DATES -->
+                <div id="tabPanel-dates" class="tab-panel hidden space-y-6">
+                    <form onsubmit="handleAddImpDate(event)" class="bg-slate-950/60 p-4 rounded-xl border border-slate-800 space-y-3">
+                        <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Add Critical Milestone / Date</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <input type="text" id="wsDateTitle" required placeholder="Milestone title..." class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none" />
+                            <input type="date" id="wsDateVal" required class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none" />
+                            <label class="flex items-center space-x-2 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 cursor-pointer">
+                                <input type="checkbox" id="wsDateUrgent" class="rounded text-blue-600 focus:ring-0" />
+                                <span class="text-xs text-slate-300">Mark as Urgent</span>
+                            </label>
+                        </div>
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm rounded-lg px-4 py-2 flex items-center space-x-1 cursor-pointer">
+                            <i class="fa-solid fa-plus text-xs"></i>
+                            <span>Save Milestone</span>
+                        </button>
+                    </form>
+                    <div id="wsDatesList" class="space-y-3"></div>
+                </div>
+
+                <!-- TAB 4: CHECKLIST -->
+                <div id="tabPanel-checklist" class="tab-panel hidden space-y-6">
+                    <form onsubmit="handleAddChecklist(event)" class="flex gap-2">
+                        <input type="text" id="wsChecklistText" required placeholder="New operational checklist item..." class="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none" />
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm px-4 py-2 rounded-lg cursor-pointer">
+                            Add Item
+                        </button>
+                    </form>
+                    <div id="wsChecklistItems" class="space-y-2"></div>
+                </div>
+
+                <!-- TAB 5: NOTES -->
+                <div id="tabPanel-notes" class="tab-panel hidden space-y-4">
+                    <div class="flex justify-between items-center">
+                        <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Business Notes & Strategic Reminders</label>
+                        <button onclick="handleSaveNotes()" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition cursor-pointer">
+                            Save Changes
+                        </button>
+                    </div>
+                    <textarea
+                        id="wsNotesText"
+                        rows="8"
+                        placeholder="Write long-term strategy notes, portal URLs, supplier contacts..."
+                        class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-slate-200 focus:outline-none focus:border-blue-500 font-mono"
+                    ></textarea>
+                </div>
+
+            </div>
         </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-semibold text-gray-400 mb-1">Priority</label>
-            <select id="todo-priority" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500 text-sm">
-              <option value="High">High</option>
-              <option value="Medium" selected>Medium</option>
-              <option value="Low">Low</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-gray-400 mb-1">Target Date</label>
-            <input type="date" id="todo-date" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500 text-sm">
-          </div>
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-gray-400 mb-1">Detailed Description / Checklist Notes</label>
-          <textarea id="todo-notes" rows="3" placeholder="Additional context..." class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500 text-sm"></textarea>
-        </div>
-        <div class="flex items-center space-x-2 pt-1">
-          <input type="checkbox" id="todo-dashboard-pin" class="rounded bg-gray-900 border-gray-700 text-indigo-600 focus:ring-0">
-          <label for="todo-dashboard-pin" class="text-xs text-gray-300">Show on Main Dashboard Front Card</label>
-        </div>
-        <div class="flex justify-end space-x-3 pt-2">
-          <button type="button" onclick="closeModal('add-todo-modal')" class="px-4 py-2 rounded-lg text-sm bg-gray-700 hover:bg-gray-600 text-gray-300">Cancel</button>
-          <button type="submit" class="px-4 py-2 rounded-lg text-sm bg-indigo-600 hover:bg-indigo-500 text-white font-medium shadow">Add Task</button>
-        </div>
-      </form>
     </div>
-  </div>
 
-  <!-- Add Event Modal -->
-  <div id="add-event-modal" class="hidden fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-gray-800 border border-gray-700 rounded-2xl w-full max-w-md p-6 space-y-5 shadow-2xl">
-      <div class="flex justify-between items-center">
-        <h3 class="text-lg font-bold text-white">Add Upcoming Event / Schedule</h3>
-        <button onclick="closeModal('add-event-modal')" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
-      </div>
-      <form onsubmit="handleAddEvent(event)" class="space-y-4">
-        <div>
-          <label class="block text-xs font-semibold text-gray-400 mb-1">Event / Class Title</label>
-          <input type="text" id="event-title" required placeholder="e.g. Optics Law Revision Class" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500 text-sm">
-        </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-semibold text-gray-400 mb-1">Date</label>
-            <input type="date" id="event-date" required class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500 text-sm">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-gray-400 mb-1">Time</label>
-            <input type="text" id="event-time" placeholder="e.g. 10:00 AM - 12:00 PM" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500 text-sm">
-          </div>
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-gray-400 mb-1">Location / Platform</label>
-          <input type="text" id="event-location" placeholder="e.g. Kondotty KP Mall / Zoom" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500 text-sm">
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-gray-400 mb-1">Type</label>
-          <select id="event-type" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500 text-sm">
-            <option value="Class / Coaching">Class / Coaching</option>
-            <option value="Meeting / Review">Meeting / Review</option>
-            <option value="Product Launch / Promo">Product Launch / Promo</option>
-            <option value="Deadline / Milestone">Deadline / Milestone</option>
-          </select>
-        </div>
-        <div class="flex justify-end space-x-3 pt-2">
-          <button type="button" onclick="closeModal('add-event-modal')" class="px-4 py-2 rounded-lg text-sm bg-gray-700 hover:bg-gray-600 text-gray-300">Cancel</button>
-          <button type="submit" class="px-4 py-2 rounded-lg text-sm bg-purple-600 hover:bg-purple-500 text-white font-medium shadow">Save Event</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <script src="script.js"></script>
+    <!-- Custom Application Logic -->
+    <script src="script.js"></script>
 </body>
 </html>
